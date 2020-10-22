@@ -1,0 +1,75 @@
+{
+  "eslint.format.enable": true,
+  //autoFix默认开启，只需输入字符串数组即可
+  "eslint.validate": ["javascript", "vue", "html", "vue-html"],
+  "files.autoSave": "off",
+  "eslint.run": "onSave",
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+
+  // vscode默认启用了根据文件类型自动设置tabsize的选项
+  "editor.detectIndentation": false,
+  // 重新设定tabsize
+  "editor.tabSize": 2,
+
+  // eslint配置项，保存时自动修复错误
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.organizeImports": true
+  },
+
+  // 让vetur使用vs自带的js格式化工具，以便在函数前面加个空格
+  // "vetur.format.defaultFormatter.js": "vscode-typescript",
+  // 移除js语句的分号
+  "javascript.format.semicolons": "remove",
+  // 在函数名后面加上括号，
+  "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+  // 指定 *.vue 文件的格式化工具为vetur
+  "[vue]": {
+    "editor.defaultFormatter": "octref.vetur"
+  },
+  // 指定 *.js 文件的格式化工具为vscode自带
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  // 默认使用prettier格式化支持的文件
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  //prettier插件设置
+  // 使用双引号包含字符串
+  "prettier.singleQuote": true,
+  // 不添加行尾分号
+  "prettier.semi": false,
+  // 对象或数组最后一个元素不添加逗号
+  "prettier.trailingComma": "none",
+  "prettier.bracketSpacing": true,
+  "prettier.htmlWhitespaceSensitivity": "ignore",
+
+  //设置vetur插件
+  "vetur.format.defaultFormatter.html": "prettyhtml",
+  "vetur.format.defaultFormatter.pug": "prettier",
+  "vetur.format.defaultFormatter.css": "prettier",
+  "vetur.format.defaultFormatter.postcss": "prettier",
+  "vetur.format.defaultFormatter.scss": "prettier",
+  "vetur.format.defaultFormatter.less": "prettier",
+  "vetur.format.defaultFormatter.stylus": "stylus-supremacy",
+  "vetur.format.defaultFormatter.js": "prettier",
+  "vetur.format.defaultFormatter.ts": "prettier",
+  "vetur.format.defaultFormatter.sass": "sass-formatter",
+
+  //设置vetur
+  "vetur.format.options.tabSize": 2,
+  "vetur.format.options.useTabs": false,
+  "vetur.format.defaultFormatterOptions": {
+    // "prettier": {
+    //   // Prettier option here
+    //   "semi": false,
+    //   "singleQuote": true
+    // },
+    // "prettyhtml": {
+    //   "printWidth": 100, // No line exceeds 100 characters
+    //   "singleQuote": true // Prefer double quotes over single quotes
+    // }
+  },
+  "vue3snippets.format_need": []
+}

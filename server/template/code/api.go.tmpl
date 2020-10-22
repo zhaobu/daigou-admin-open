@@ -1,0 +1,82 @@
+package {{.ModuleName}}
+
+import (
+	"daigou-admin/models/system_models"
+	"daigou-admin/utils"
+	"daigou-admin/utils/app"
+	"daigou-admin/utils/app/msg"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+)
+
+func Get{{.ClassName}}List(c *gin.Context) {
+	var data models.{{.ClassName}}
+	var err error
+	var pageSize = 10
+	var pageIndex = 1
+
+	if size := c.Request.FormValue("pageSize"); size != "" {
+		pageSize = utils.StrToInt(err, size)
+	}
+	if index := c.Request.FormValue("pageIndex"); index != "" {
+		pageIndex = utils.StrToInt(err, index)
+	}
+
+    {{ range .Columns -}}
+    {{$z := .IsQuery}}
+    {{- if ($z) -}}
+    {{ if eq (.GoType) "int" -}}
+    data.{{.GoField}}, _ = utils.StringToInt(c.Request.FormValue("{{.JsonField}}"))
+    {{ else -}}
+    data.{{.GoField}} = c.Request.FormValue("{{.JsonField}}")
+    {{ end }}
+    {{- end -}}
+    {{end}}
+
+	data.DataScope = utils.GetUserIdStr(c)
+	result, count, err := data.GetPage(pageSize, pageIndex)
+	utils.HasError(err, "", -1)
+
+	app.PageOK(c, result, int(count), pageIndex, pageSize, "")
+}
+
+func Get{{.ClassName}}(c *gin.Context) {
+	var data models.{{.ClassName}}
+	data.{{.PkGoField}}, _ = utils.StringToInt(c.Param("{{.PkJsonField}}"))
+	result, err := data.Get()
+	utils.HasError(err, "抱歉未找到相关信息", -1)
+
+	app.OK(c, result, "")
+}
+
+func Insert{{.ClassName}}(c *gin.Context) {
+	var data models.{{.ClassName}}
+	err := c.ShouldBindJSON(&data)
+	data.CreateBy = utils.GetUserIdStr(c)
+	utils.HasError(err, "", 500)
+	result, err := data.Create()
+	utils.HasError(err, "", -1)
+	app.OK(c, result, "")
+}
+
+func Update{{.ClassName}}(c *gin.Context) {
+	var data models.{{.ClassName}}
+	err := c.BindWith(&data, binding.JSON)
+	utils.HasError(err, "数据解析失败", -1)
+	data.UpdateBy = utils.GetUserIdStr(c)
+	result, err := data.Update(data.{{.PkGoField}})
+	utils.HasError(err, "", -1)
+
+	app.OK(c, result, "")
+}
+
+func Delete{{.ClassName}}(c *gin.Context) {
+	var data models.{{.ClassName}}
+	data.UpdateBy = utils.GetUserIdStr(c)
+
+	IDS := utils.IdsStrToIdsIntGroup("{{.PkJsonField}}", c)
+	_, err := data.BatchDelete(IDS)
+	utils.HasError(err, msg.DeletedFail, 500)
+	app.OK(c, nil, msg.DeletedSuccess)
+}

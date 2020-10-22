@@ -1,0 +1,57 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "edge",
+      "request": "launch",
+      "name": "vuejs debug: chrome",
+      "url": "http://localhost:8080",
+      "webRoot": "${workspaceFolder}",
+      "breakOnLoad": true,
+      "pathMapping": {
+        "/_karma_webpack_": "${workspaceFolder}"
+      },
+      "sourceMapPathOverrides": {
+        "webpack:/*": "${webRoot}/*",
+        "/./*": "${webRoot}/*",
+        "/src/*": "${webRoot}/*",
+        "/*": "*",
+        "/./~/*": "${webRoot}/node_modules/*"
+      },
+      "runtimeExecutable": "H:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
+      // "preLaunchTask": "vuejs_build"
+    },
+    {
+      "type": "edge",
+      "request": "launch",
+      "name": "vuejs: chrome",
+      "url": "http://localhost:8080",
+      "webRoot": "${workspaceFolder}/src",
+      "breakOnLoad": true,
+      "sourceMapPathOverrides": {
+        "webpack:///src/*": "${webRoot}/*"
+      },
+      "runtimeExecutable": "H:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
+    },
+    {
+      "type": "edge",
+      "request": "launch",
+      "name": "vuejs launch: chrome",
+      "url": "http://localhost:8080",
+      "webRoot": "${workspaceFolder}/src",
+      "breakOnLoad": true,
+      "pathMapping": {
+        "/_karma_webpack_": "${workspaceFolder}"
+      },
+      "sourceMapPathOverrides": {
+        "webpack:/*": "${webRoot}/*",
+        "/./*": "${webRoot}/*",
+        "/src/*": "${webRoot}/*",
+        "/*": "*",
+        "/./~/*": "${webRoot}/node_modules/*"
+      },
+      // "preLaunchTask": "serve"
+      "runtimeExecutable": "H:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
+    }
+  ]
+}

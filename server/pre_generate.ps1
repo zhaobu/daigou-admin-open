@@ -1,0 +1,1 @@
+if (Test-Path bin/logs){(Remove-Item -r bin/logs)}

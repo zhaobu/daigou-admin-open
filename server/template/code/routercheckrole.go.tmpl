@@ -1,0 +1,27 @@
+package router
+
+import (
+	"daigou-admin/app/apis/{{.ModuleName}}"
+	"daigou-admin/middleware"
+	jwt "daigou-admin/pkg/jwtauth"
+
+	"github.com/gin-gonic/gin"
+)
+
+// 需认证的路由代码
+func register{{.ClassName}}Router(v1 *gin.RouterGroup, authMiddleware *jwt.GinJWTMiddleware) {
+
+	r := v1.Group("/{{.ModuleName}}").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole(r.Casbin.GetCasbin()))
+	{
+		r.GET("/:{{.PkJsonField}}", {{.ModuleName}}.Get{{.ClassName}})
+		r.POST("", {{.ModuleName}}.Insert{{.ClassName}})
+		r.PUT("", {{.ModuleName}}.Update{{.ClassName}})
+		r.DELETE("/:{{.PkJsonField}}", {{.ModuleName}}.Delete{{.ClassName}})
+	}
+
+	l := v1.Group("").Use(authMiddleware.MiddlewareFunc()).Use(middleware.AuthCheckRole(r.Casbin.GetCasbin()))
+	{
+		l.GET("/{{.ModuleName}}List", {{.ModuleName}}.Get{{.ClassName}}List)
+	}
+
+}

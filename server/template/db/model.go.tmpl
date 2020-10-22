@@ -1,0 +1,194 @@
+package {{.modelPackageName}}
+
+import (
+	"daigou-admin/model"
+
+	"github.com/jinzhu/gorm"
+)
+
+var (
+	_ *model.Time
+)
+
+/*
+DB Table Details
+-------------------------------------
+{{ $ddl := .TableInfo.DBMeta.DDL }}
+{{if $ddl }}
+{{$ddl}}
+{{- end}}
+
+{{if .TableInfo.Notes }}
+Comments
+-------------------------------------
+{{ .TableInfo.Notes}}
+{{end}}
+
+*/
+
+ {{if not .Config.AddProtobufAnnotation }}
+
+// {{.StructName}} struct is a row record of the {{.TableName}} table in the {{.DatabaseName}} database
+type {{.StructName}} struct {
+    {{range .TableInfo.Fields}}{{.}}
+    {{- end}}
+}
+{{else}}
+
+// {{.StructName}} struct is a row record of the {{.TableName}} table in the {{.DatabaseName}} database
+/*
+type {{.StructName}} struct {
+    {{range .TableInfo.Fields}}{{.}}
+    {{end}}
+}
+*/
+
+{{- end}}
+
+var {{.TableName}}TableInfo = &TableInfo {
+	Name: "{{.TableName}}",
+	Columns: []*ColumnInfo{
+        {{range .TableInfo.CodeFields -}}
+        &ColumnInfo{
+        	Index: {{.ColumnMeta.Index}},
+        	Name: "{{.ColumnMeta.Name}}",
+        	Comment: `{{.ColumnMeta.Comment}}`,
+        	Notes: `{{.ColumnMeta.Notes}}`,
+        	Nullable: {{.ColumnMeta.Nullable}},
+        	DatabaseTypeName: "{{.ColumnMeta.DatabaseTypeName}}",
+        	DatabaseTypePretty: "{{.ColumnMeta.DatabaseTypePretty}}",
+        	IsPrimaryKey: {{.ColumnMeta.IsPrimaryKey}},
+        	IsAutoIncrement: {{.ColumnMeta.IsAutoIncrement}},
+        	IsArray: {{.ColumnMeta.IsArray}},
+        	ColumnType: "{{.ColumnMeta.ColumnType}}",
+        	ColumnLength: {{.ColumnMeta.ColumnLength}},
+        	GoFieldName: "{{.GoFieldName}}",
+        	GoFieldType: "{{.GoFieldType}}",
+        	JSONFieldName: "{{.JSONFieldName}}",
+        	ProtobufFieldName: "{{.ProtobufFieldName}}",
+        	ProtobufType: "{{.ProtobufType}}",
+        	ProtobufPos: {{.ProtobufPos}},
+        },
+        {{end}}
+	},
+}
+
+
+
+// TableName sets the insert table name for this struct type
+func ({{.ShortStructName}} *{{.StructName}}) TableName() string {
+	return "{{.TableName}}"
+}
+
+// BeforeSave invoked before saving, return an error if field is not populated.
+func ({{.ShortStructName}} *{{.StructName}}) BeforeSave() error {
+	return nil
+}
+
+// Prepare invoked before saving, can be used to populate fields etc.
+func ({{.ShortStructName}} *{{.StructName}}) Prepare() {
+}
+
+// Validate invoked before performing action, return an error if field is not populated.
+func ({{.ShortStructName}} *{{.StructName}}) Validate(action Action) error {
+    return nil
+}
+
+// TableInfo return table meta data
+func ({{.ShortStructName}} *{{.StructName}}) TableInfo() *TableInfo {
+	return {{.TableName}}TableInfo
+}
+
+// GetAll{{.StructName}} is a function to get a slice of record(s) from {{.TableName}} table in the {{.DatabaseName}} database
+// params - page     - page requested (defaults to 0)
+// params - pagesize - number of records in a page  (defaults to 20)
+// params - order    - db sort order column
+// error - model.ErrNotFound, db Find error
+func ({{.ShortStructName}} *{{.StructName}}) GetAll(DB *gorm.DB, page, pagesize int, order string) (results []*{{.StructName}}, totalRows int64, err error) {
+
+	resultOrm := DB.Model(&{{.StructName}}{})
+    resultOrm.Count(&totalRows)
+
+	if page > 0 {
+		offset := (page - 1) * pagesize
+		resultOrm = resultOrm.Offset(offset).Limit(pagesize)
+	} else {
+		resultOrm = resultOrm.Limit(pagesize)
+    }
+
+	if order != "" {
+		resultOrm = resultOrm.Order(order)
+	}
+
+	if err = resultOrm.Find(&results).Error; err != nil {
+	    err = model.ErrNotFound
+		return nil, -1, err
+	}
+
+	return results, totalRows, nil
+}
+
+// Get{{.StructName}} is a function to get a single record from the {{.TableName}} table in the {{.DatabaseName}} database
+// error - model.ErrNotFound, db Find error
+func ({{.ShortStructName}} *{{.StructName}}) Get(DB *gorm.DB,{{range $field := .TableInfo.CodeFields}} {{ if $field.PrimaryKeyArgName }} {{$field.PrimaryKeyArgName}} {{$field.GoFieldType}},{{end}}{{end -}}) (record *{{.StructName}}, err error) {
+	record = &{{.StructName}}{}
+	if err = DB.First(record, {{range $field := .TableInfo.CodeFields}} {{ if $field.PrimaryKeyArgName }} {{$field.PrimaryKeyArgName}},{{end}}{{end -}}).Error; err != nil {
+	    err = model.ErrNotFound
+		return record, err
+	}
+
+	return record, nil
+}
+
+// Add{{.StructName}} is a function to add a single record to {{.TableName}} table in the {{.DatabaseName}} database
+// error - model.ErrInsertFailed, db save call failed
+func ({{.ShortStructName}} *{{.StructName}}) Add(DB *gorm.DB, record *{{.StructName}}) (result *{{.StructName}}, RowsAffected int64, err error) {
+    db := DB.Save(record)
+	if err = db.Error; err != nil {
+	    return nil, -1, model.ErrInsertFailed
+	}
+
+	return record, db.RowsAffected, nil
+}
+
+// Update{{.StructName}} is a function to update a single record from {{.TableName}} table in the {{.DatabaseName}} database
+// error - model.ErrNotFound, db record for id not found
+// error - model.ErrUpdateFailed, db meta data copy failed or db.Save call failed
+func ({{.ShortStructName}} *{{.StructName}}) Update(DB *gorm.DB, {{range $field := .TableInfo.CodeFields}} {{ if $field.PrimaryKeyArgName }} {{$field.PrimaryKeyArgName}} {{$field.GoFieldType}},{{end}}{{end -}}updated *{{.StructName}}) (result *{{.StructName}}, RowsAffected int64, err error) {
+
+   result = &{{.StructName}}{}
+   db := DB.First(result,{{range $field := .TableInfo.CodeFields}} {{ if $field.PrimaryKeyArgName }} {{$field.PrimaryKeyArgName}},{{end}}{{end -}})
+   if err = db.Error; err != nil {
+      return nil, -1, model.ErrNotFound
+   }
+
+   if err = Copy(result, updated); err != nil {
+      return nil, -1, model.ErrUpdateFailed
+   }
+
+   db = db.Save(result)
+   if err = db.Error; err != nil  {
+      return nil, -1, model.ErrUpdateFailed
+   }
+
+   return result, db.RowsAffected, nil
+}
+
+// Delete{{.StructName}} is a function to delete a single record from {{.TableName}} table in the {{.DatabaseName}} database
+// error - model.ErrNotFound, db Find error
+// error - model.ErrDeleteFailed, db Delete failed error
+func ({{.ShortStructName}} *{{.StructName}}) Delete(DB *gorm.DB,{{range $field := .TableInfo.CodeFields}} {{ if $field.PrimaryKeyArgName }} {{$field.PrimaryKeyArgName}} {{$field.GoFieldType}},{{end}}{{end -}}) (rowsAffected int64, err error) {
+
+    record := &{{.StructName}}{}
+    db := DB.First(record, {{range $field := .TableInfo.CodeFields}} {{ if $field.PrimaryKeyArgName }} {{$field.PrimaryKeyArgName -}},{{end}}{{end}})
+    if db.Error != nil {
+        return -1, model.ErrNotFound
+    }
+
+    db = db.Delete(record)
+    if err = db.Error; err != nil {
+        return -1, model.ErrDeleteFailed
+    }
+
+   return db.RowsAffected, nil
+}

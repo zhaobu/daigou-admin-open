@@ -1,0 +1,97 @@
+# Gin-Vue-Admin Global Configuration
+
+# casbin configuration
+casbin:
+  model-path: "./rbac_model.conf"
+
+# jwt configuration
+jwt:
+  signing-key: "daigou"
+
+# mysql connect configuration
+database:
+  # 控制台日志
+  stdout: true
+  # 数据库类型 mysql，sqlite3， postgres
+  driver: "mysql"
+  auto-migrate: true
+  singular-table: false
+  connect:
+    # 数据库连接
+    - url: "root:daigou_admin123@tcp(119.23.138.52:7002)/daigou_admin_dev?parseTime=True&loc=Local&charset=utf8mb4&collation=utf8mb4_bin"
+      name: "admin"
+
+# oss configuration
+
+# 请自行七牛申请对应的 公钥 私钥 bucket 和 域名地址
+qiniu:
+  access-key: "25j8dYBZ2wuiy0yhwShytjZDTX662b8xiFguwxzZ"
+  secret-key: "pgdbqEsf7ooZh7W3xokP833h3dZ_VecFXPDeG5JY"
+  bucket: "qm-plus-img"
+  img-path: "http://qmplusimg.henrongyi.top"
+
+# redis configuration
+redis:
+  - url: "redis://:daigou_admin123@119.23.138.52:7001/1"
+    name: "admin"
+
+# system configuration
+system:
+  use-multipoint: true
+  # 服务器监听地址
+  addr: 0.0.0.0:8888
+  # debug 开发环境 test 测试环境 release 线上环境
+  mode: debug
+  # 控制台日志
+  stdout: true
+  # 静态文件根目录
+  static: "../static"
+  # 打印路由到日志
+  log-route: true
+
+# captcha configuration
+captcha:
+  key-long: 6
+  img-width: 240
+  img-height: 80
+
+# logger configuration
+logger:
+  # 日志存放路径
+  path: logs
+  # 控制台日志
+  stdout: true
+  # 日志等级
+  level: debug
+  # 业务日志开关
+  enabledbus: true
+  # 请求日志开关
+  enabledreq: true
+  # 数据库日志开关 dev模式，将自动开启
+  enableddb: true
+
+# 自动生成代码
+gen:
+  # 代码生成时使用前端代码存放位置，需要指定到src文件夹，相对路径
+  front-path: ../../web/src
+  # 进程启动路径相对项目根目录所在位置
+  root-path: ../
+
+# 配置业务服务器
+service:
+  # - db: "root:daigou_admin123@tcp(119.23.138.52:7002)/daigou?parseTime=True&loc=Local&charset=utf8mb4&collation=utf8mb4_bin"
+  #   name: 代购测试数据库
+  #   redis: "redis://:daigou123@127.0.0.1:6379/4"
+  #   base_url: "http://127.0.0.1:8199/daigou/api/v1/"
+  # - db: "daigou:daigou123!!@tcp(127.0.0.1:3306)/daigou_dev?parseTime=True&loc=Local&charset=utf8mb4&collation=utf8mb4_bin"
+  #   name: 开发服
+  #   redis: "redis://:daigou123@127.0.0.1:6379/0"
+  #   base_url: "http://127.0.0.1:8199/daigou/api/v1/"
+  - db: "daigou:daigou123!!@tcp(127.0.0.1:3306)/daigou_test?parseTime=True&loc=Local&charset=utf8mb4&collation=utf8mb4_bin"
+    name: 测试服
+    redis: "redis://:daigou123@127.0.0.1:6379/1"
+    base_url: "http://127.0.0.1:8199/daigou/api/v1/"
+  - db: "daigou:daigou123!!@tcp(127.0.0.1:3306)/daigou_online?parseTime=True&loc=Local&charset=utf8mb4&collation=utf8mb4_bin"
+    name: 正式服
+    redis: "redis://:daigou123@127.0.0.1:6379/2"
+    base_url: "http://127.0.0.1:8199/daigou/api/v1/"
